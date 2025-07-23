@@ -1,0 +1,14 @@
+pymongo
+pandas
+streamlit
+praw
+prawcore
+langchain
+langchain-core
+pydantic
+google-api-python-client
+google-auth
+google-auth-oauthlib
+typing-extensions
+python-dotenv
+langchain-google-genai
