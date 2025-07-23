@@ -201,8 +201,8 @@ This comprehensive workflow ensures a multi-dimensional investment analysis appr
 
 ### **Step 1: Repository Setup**
 ```bash
-git clone https://github.com/GabrielISB/UPY_Massive_Data_Management_5A_2025.git
-cd UPY_Massive_Data_Management_5A_2025/student_contributions/CASTILLO_RUZ_JORGE_LUIS_2309037/projectUnit2
+git clone https://github.com/Basengalenga/Tesla_AI_Investing_Tool.git
+cd projectUnit2
 ```
 
 ### **Step 2: Environment Preparation**
