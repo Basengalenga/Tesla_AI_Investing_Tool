@@ -109,7 +109,7 @@ r/Investing community insights
 
 > **What is a Candlestick Chart?**
 > 
-> A **candlestick chart** is a sophisticated financial visualization tool that displays price movements over specific time periods. Each "candle" represents a comprehensive view of market activity during that timeframe, providing crucial insights into market sentiment and price dynamics.
+> A **candlestick chart** is a sophisticated financial visualization tool that displays price movements over specific time periods. Each "candle" represents a comprehensive view of market activity during that timeframe, providing crucial insights into market and price dynamics.
 
 ### **Understanding OHLC Components**
 
@@ -148,12 +148,11 @@ Follow this systematic approach to maximize the platform's analytical capabiliti
 **1. 📈 Candlestick & Trend Analysis**
    - Examine the candlestick chart patterns for trend identification
    - Analyze price action, support/resistance levels, and formation patterns
-   - Assess trading volume correlation with price movements
+   - Analyse trading volume with price movements
 
 **2. 🔍 Market Trend Assessment**
    - Identify short-term and long-term trend directions
    - Evaluate momentum indicators and volatility patterns
-   - Review volume-weighted price movements for confirmation
 
 **3. 📰 AI-Powered News Analysis**
    - Review Gemini AI's comprehensive news sentiment analysis
@@ -162,7 +161,7 @@ Follow this systematic approach to maximize the platform's analytical capabiliti
 
 **4. 📊 Sentiment Visualization**
    - Study the sentiment analysis charts for trend patterns
-   - Correlate sentiment shifts with price movements
+   - Analyse how sentiment shifts with price movements
    - Identify divergences between market sentiment and price action
 
 **5. 🗣️ Reddit Community Intelligence**
