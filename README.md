@@ -19,7 +19,7 @@
 
 ## 🎯 **Executive Summary**
 
-**TESLA | Investment Intelligence Platform** is a cutting-edge investment intelligence solution built on a robust **ETL pipeline** architecture. Leveraging containerized **Docker** deployment, the platform integrates **Apache Airflow**, **MongoDB**, **PostgreSQL**, and advanced AI capabilities through **Gemini 2.5-Flash**, orchestrated via **LangChain** and visualized through **Streamlit**.
+**TESLA | Investment Intelligence Platform** is a cutting-edge investment intelligence solution built on a robust **ETL pipeline** architecture. Leveraging containerized **Docker** deployment, the platform integrates **Apache Airflow**, **MongoDB** as the primary data store, and advanced AI capabilities through **Gemini 2.5-Flash**, orchestrated via **LangChain** and visualized through **Streamlit**.
 
 <details>
 <summary><strong>🚀 Key Investment Features</strong></summary>
@@ -42,7 +42,7 @@
 graph TB
     A[Data Sources] --> B[ETL Pipeline]
     B --> C[AI Analysis]
-    C --> D[Data warehousing]
+    C --> D[Data Warehousing]
     D --> E[Investment Dashboard]
     
     A1[Alpha Vantage API] --> A
@@ -50,19 +50,85 @@ graph TB
     A3[Reddit API] --> A
     
     B1[Apache Airflow] --> B
+    B2[XCom Communication] --> B
 
     C1[Gemini 2.5-Flash] --> C
     C2[LangChain] --> C
 
-    D1[MongoDB] --> D
-    D2[PostgreSQL] --> D
-    
-    
+    D1[MongoDB - Primary DB] --> D
+    D2[PostgreSQL - Airflow Only] --> D
     
     E1[Streamlit Dashboard] --> E
 ```
 
 </div>
+
+### 📊 **Data Storage Architecture**
+
+<table>
+<tr>
+<td width="50%" align="center">
+<img src="https://img.shields.io/badge/MongoDB-Primary%20Database-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB Primary"/><br/>
+<strong>🎯 Primary Data Store</strong><br/>
+• All investment data storage<br/>
+• Raw market data preservation<br/>
+• AI-generated insights<br/>
+• Processed analytics<br/>
+• User dashboard data
+</td>
+<td width="50%" align="center">
+<img src="https://img.shields.io/badge/PostgreSQL-Airflow%20Backend-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL Airflow"/><br/>
+<strong>🔧 Airflow Infrastructure</strong><br/>
+• Workflow metadata storage<br/>
+• Task execution history<br/>
+• DAG run information<br/>
+• User authentication<br/>
+• System configuration
+</td>
+</tr>
+</table>
+
+> **💡 Important Database Distinction:**
+> - **MongoDB**: Serves as the primary database for all investment-related data, analytics, and AI insights
+> - **PostgreSQL**: Exclusively used by Apache Airflow for internal workflow management and system operations
+
+### 🔄 **XCom Communication System**
+
+**Apache Airflow XCom (Cross-Communication)** enables seamless data exchange between tasks within the ETL pipeline following this specific flow:
+
+<div align="center">
+
+```mermaid
+graph TD
+    A[Extract Task] -->|XCom Push| B[XCom Storage]
+    B -->|XCom Pull| C[Raw Load Task]
+    B -->|XCom Pull| D[Transform Task]
+    D -->|XCom Push| B
+    B -->|XCom Pull| E[Gemini AI Task]
+    E -->|XCom Push| B
+    B -->|XCom Pull All| F[Aggregated Load Task]
+    
+    style B fill:#017CEE,stroke:#fff,stroke-width:2px,color:#fff
+    style F fill:#47A248,stroke:#fff,stroke-width:2px,color:#fff
+```
+
+</div>
+
+**TESLA Platform XCom Flow:**
+
+| **Task Stage** | **XCom Operation** | **Data Content** | **Purpose** |
+|----------------|-------------------|------------------|-------------|
+| **1. Extract** | **Push** → XCom | Raw market data, news articles, Reddit posts | Store extracted data for downstream tasks |
+| **2. Raw Load** | **Pull** ← XCom | Original extracted data | Load raw data into MongoDB for backup |
+| **3. Transform** | **Pull** ← XCom from Extract<br/>**Push** → XCom | Pull: Raw data<br/>Push: Processed data | Clean and structure the raw data |
+| **4. Gemini AI** | **Pull** ← XCom from Transform<br/>**Push** → XCom | Pull: Structured data<br/>Push: AI insights | Generate sentiment analysis and summaries |
+| **5. Aggregated Load** | **Pull All** ← XCom | All processed data + AI insights | Final consolidation into MongoDB |
+
+**Key XCom Benefits:**
+- **🔗 Sequential Processing**: Ensures proper data flow through pipeline stages
+- **📊 Data Integrity**: Maintains consistency across transformation steps  
+- **🤖 AI Integration**: Seamless handoff between data processing and AI analysis
+- **🔍 Final Aggregation**: All XCom data consolidated in the final load stage
 
 ### 📊 **Data Extraction Layer**
 
@@ -95,13 +161,22 @@ r/Investing community insights
 - **📝 Executive Summaries**: Automated investment briefings
 - **🏷️ Smart Categorization**: Semantic classification of market sentiment
 
-### 💾 **Data Persistence**
+### 💾 **Complete Data Flow Architecture**
 
-| Component | Purpose | Technology |
-|-----------|---------|------------|
-| **Raw Data Store** | Historical data preservation | MongoDB |
-| **Processed Analytics** | Structured investment metrics | PostgreSQL |
-| **AI Insights** | Generated summaries and classifications | MongoDB |
+```mermaid
+graph TD
+    A[Data Sources] --> B[Airflow ETL Pipeline]
+    B --> C[XCom Task Communication]
+    C --> D[MongoDB Primary Storage]
+    D --> E[Streamlit Dashboard]
+    
+    F[PostgreSQL] --> B
+    F[PostgreSQL - Airflow Backend Only]
+    
+    style D fill:#47A248,stroke:#fff,stroke-width:3px,color:#fff
+    style F fill:#336791,stroke:#fff,stroke-width:2px,color:#fff
+    style C fill:#017CEE,stroke:#fff,stroke-width:2px,color:#fff
+```
 
 ---
 
@@ -183,14 +258,15 @@ This comprehensive workflow ensures a multi-dimensional investment analysis appr
 
 <div align="center">
 
-| **Layer** | **Technology** | **Version/Image** |
-|-----------|---------------|-------------------|
-| **Orchestration** | Apache Airflow | `apache/airflow:2.8.1-python3.11` |
-| **Database (NoSQL)** | MongoDB | `mongo:6-jammy` |
-| **Database (SQL)** | PostgreSQL | `postgres:15` |
-| **AI Framework** | LangChain | Latest Gemini 2.5 compatible |
-| **Frontend** | Streamlit | Latest stable |
-| **AI Models** | Google Gemini | `2.0-Flash` & `2.5-Flash` |
+| **Layer** | **Technology** | **Version/Image** | **Purpose** |
+|-----------|---------------|-------------------|-------------|
+| **Orchestration** | Apache Airflow | `apache/airflow:2.8.1-python3.11` | ETL workflow management |
+| **Primary Database** | MongoDB | `mongo:6-jammy` | **Investment data storage** |
+| **Airflow Backend** | PostgreSQL | `postgres:15` | **Airflow system database only** |
+| **Task Communication** | XCom | Built-in Airflow | Inter-task data exchange |
+| **AI Framework** | LangChain | Latest Gemini 2.5 compatible | AI orchestration |
+| **Frontend** | Streamlit | Latest stable | Dashboard visualization |
+| **AI Models** | Google Gemini | `2.0-Flash` & `2.5-Flash` | Natural language processing |
 
 </div>
 
@@ -242,6 +318,8 @@ cd ..
 docker-compose run --rm webserver airflow db init
 ```
 
+> **📋 Note:** This step initializes the PostgreSQL database that Airflow uses for its internal operations (workflow metadata, task history, user management, etc.)
+
 ### **Step 5: Admin User Creation**
 ```bash
 docker-compose run --rm webserver airflow users create \
@@ -257,6 +335,12 @@ docker-compose run --rm webserver airflow users create \
 ```bash
 docker-compose up -d
 ```
+
+> **🏗️ Architecture Note:** This command starts:
+> - **MongoDB**: Primary database for all investment data
+> - **PostgreSQL**: Airflow's system database for workflow management
+> - **Apache Airflow**: ETL orchestration with XCom communication
+> - **Streamlit**: Dashboard frontend
 
 ### **Step 7: Platform Access**
 
@@ -278,6 +362,8 @@ EPIC_ULTRA_SUPER_INTELIGENT_TESLA_VIGILANT
 ```
 
 ⏱️ **Wait 2-3 minutes** for complete ETL execution
+
+> **🔄 XCom in Action:** During DAG execution, you can monitor XCom data exchange between tasks in the Airflow UI under "Admin" → "XComs" to see how data flows through the pipeline.
 
 ### **Step 9: Investment Dashboard**
 
@@ -301,6 +387,10 @@ Access: [http://localhost:8501](http://localhost:8501)
 > 
 > The platform utilizes **Google Gemini AI** with daily usage quotas. **Avoid multiple daily executions** to prevent quota exhaustion and maintain consistent analytical performance. Deploy strategically for maximum investment intelligence value.
 
+> **💾 Database Architecture Note**
+> 
+> Remember that PostgreSQL serves exclusively as Airflow's backend database for workflow management. All investment data, analytics, and AI insights are stored in MongoDB, which serves as the primary data repository for the platform.
+
 ---
 
 ## 📈 **Investment Intelligence Features**
@@ -322,6 +412,11 @@ Access: [http://localhost:8501](http://localhost:8501)
 - Risk assessment reports
 - Strategic investment recommendations
 
+### **🔄 Advanced ETL Features**
+- XCom-enabled task coordination
+- MongoDB-centered data architecture
+- Real-time pipeline monitoring
+
 </div>
 
 ---
@@ -336,6 +431,6 @@ Access: [http://localhost:8501](http://localhost:8501)
 
 ---
 
-<sub>Built for professional investors | Powered by cutting-edge AI technology</sub>
+<sub>Built for professional investors | Powered by cutting-edge AI technology | MongoDB-centered architecture</sub>
 
 </div>
